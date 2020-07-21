@@ -1,0 +1,25 @@
+PROGRAM
+VAR
+integer i;
+bool b;
+string s;
+BEGIN
+s:= "hello";
+b :=true;
+i := 2;
+WHILE (i<20)
+{
+i:=i+1;
+i:=i+3;
+}
+WHILE (i>100)
+{
+i:=i-1;
+}
+WHILE (b=true)
+{
+b:=false;
+i:=800;
+s:=s+" world";
+}
+END
