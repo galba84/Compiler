@@ -13,8 +13,8 @@ public class Main {
 
     public static String text;
 
-    static ProgramBlocksParser programBlocksParser;
-    static ProgramParser programParser;
+    static ProgramLinesParser programLinesParser;
+    static ProgramEntitiesParser programEntitiesParser;
     static Interpreter interpreter;
 
     public static void main(String[] args) {
@@ -24,10 +24,10 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        programBlocksParser = new ProgramBlocksParser();
-        programParser = new ProgramParser();
-        ProgramBlocksDto result = programBlocksParser.parse(text);
-        Program executionResult = programParser.parse(result);
+        programLinesParser = new ProgramLinesParser();
+        programEntitiesParser = new ProgramEntitiesParser();
+        ProgramBlocksDto result = programLinesParser.parse(text);
+        Program executionResult = programEntitiesParser.parse(result);
         System.out.println(executionResult);
         interpreter = new Interpreter();
         interpreter.execute(executionResult);

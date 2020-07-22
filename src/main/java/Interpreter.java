@@ -116,7 +116,14 @@ public class Interpreter {
             } catch (Exception e) {
                 System.out.println("Error : no such var" + operation.getFirst().value);
             }
-        } else if (operation.getOperator().isArithmetical()) {
+        } else if (isStringOperation (operation)){
+            String first = operation.getFirst().value;
+            String second = operation.getSecond().value;
+            String result = executeString(first, second, operation.getOperator().value);
+            executionFlow.put(currentOperationId, new Operand(result, VariableType.string));
+        }
+
+        else if (operation.getOperator().isArithmetical()) {
             if (operation.getFirst().variableType.equals(VariableType.integer)) {
                 Integer first = Integer.parseInt(operation.getFirst().value);
                 Integer second = Integer.parseInt(operation.getSecond().value);
@@ -124,6 +131,17 @@ public class Interpreter {
                 executionFlow.put(currentOperationId, new Operand(result.toString(), VariableType.integer));
             }
         }
+    }
+
+    private String executeString(String first, String second, String value) {
+        switch (value){
+            case "+":{  return first+second;}
+        }
+      return null;
+    }
+
+    private boolean isStringOperation(ExpressionOperation operation) {
+        return operation.getFirst().variableType.equals(VariableType.string)&&operation.getSecond().variableType.equals(VariableType.string);
     }
 
     private boolean magicLogic(ExpressionOperation operation) {

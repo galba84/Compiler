@@ -5,7 +5,7 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ProgramBlocksParserTest {
+class ProgramLinesParserTest {
     public static String text = "PROGRAM\n" +
             "VAR\n" +
             "integer i;\n" +
@@ -35,8 +35,8 @@ class ProgramBlocksParserTest {
 
     @Test
     public void test1() {
-        ProgramBlocksParser programBlocksParser = new ProgramBlocksParser();
-        ProgramBlocksDto result = programBlocksParser.parse(text);
+        ProgramLinesParser programLinesParser = new ProgramLinesParser();
+        ProgramBlocksDto result = programLinesParser.parse(text);
         ProgramBlocksDto programBlocksDto = getProgramBlocksDto();
         System.out.println(result);
         assertEquals(result, programBlocksDto);

@@ -8,21 +8,21 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GeneralTest {
 
-    ProgramBlocksParser programBlocksParser;
-    ProgramParser programParser;
+    ProgramLinesParser programLinesParser;
+    ProgramEntitiesParser programEntitiesParser;
     Interpreter interpreter;
 
     @BeforeEach
     void setUp() {
-        programBlocksParser = new ProgramBlocksParser();
-        programParser = new ProgramParser();
+        programLinesParser = new ProgramLinesParser();
+        programEntitiesParser = new ProgramEntitiesParser();
 
     }
 
     @Test
     public void test() {
-        ProgramBlocksDto result = programBlocksParser.parse(ProgramBlocksParserTest.text);
-        Program restResult = programParser.parse(result);
+        ProgramBlocksDto result = programLinesParser.parse(ProgramLinesParserTest.text);
+        Program restResult = programEntitiesParser.parse(result);
         Program expectedResult = getExpectedResult();
         System.out.println(restResult);
 

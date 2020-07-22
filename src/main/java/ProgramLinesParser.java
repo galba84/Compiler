@@ -5,7 +5,7 @@ import Exceptions.ProgramBlocksParsingException;
 import java.util.Arrays;
 import java.util.List;
 
-public class ProgramBlocksParser {
+public class ProgramLinesParser {
     ParserPointer currentParsingPoint;
     ProgramBlocksDto result;
     int lineCount;

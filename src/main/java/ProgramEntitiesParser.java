@@ -7,7 +7,7 @@ import Exceptions.ExpressionException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ProgramParser {
+public class ProgramEntitiesParser {
 
     int lineNumber = 0;
     int id;
@@ -22,7 +22,7 @@ public class ProgramParser {
     List<BodyElement> expressionBuffer;
     boolean multiLines = false;
 
-    ProgramParser() {
+    ProgramEntitiesParser() {
 
     }
 
