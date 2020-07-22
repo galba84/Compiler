@@ -3,6 +3,7 @@ VAR
 integer i;
 bool b;
 string s;
+string s;
 BEGIN
 b :=true;
 i := 2;

@@ -11,19 +11,14 @@ public class ProgramEntitiesParser {
 
     int lineNumber = 0;
     int id;
-
-    int getId() {
-        return ++id;
-    }
-
     ExpressionParser expressionParser = new ExpressionParser();
-
     BodyParseState parseBodyState = BodyParseState.SINGLE_LINE;
     List<BodyElement> expressionBuffer;
     boolean multiLines = false;
+    VariablesParser variablesParser = new VariablesParser();
 
-    ProgramEntitiesParser() {
-
+    int getId() {
+        return ++id;
     }
 
     public Program parse(ProgramBlocksDto blockLines) {
@@ -52,7 +47,10 @@ public class ProgramEntitiesParser {
         for (String line : blockLines.variablesBlock) {
             lineNumber++;
             try {
-                result.variablesContainer.add(parseVariables(line));
+                Variable variable = parseVariables(line);
+                if (null != variable){
+                    result.variablesContainer.add(variable);
+                }
             } catch (Exception e) {
                 System.out.println("wrongLine var " + lineNumber);
             }
@@ -64,7 +62,7 @@ public class ProgramEntitiesParser {
         if (null == line) {
             return null;
         }
-        line=line.trim();
+        line = line.trim();
         BodyExpressionLineType bodyExpressionLineType = null;
         try {
             bodyExpressionLineType = switchBodyLineType(line);
@@ -142,8 +140,15 @@ public class ProgramEntitiesParser {
     }
 
     private Variable parseVariables(String s) {
-        String[] s1 = s.split(" ");
-        return new Variable(s1[1].replace(";", ""), "null", VariableType.valueOf(s1[0]));
+
+        try {
+          return   variablesParser.parse(s);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        String[] s1 = s.split(" ");
+//        return new Variable(s1[1].replace(";", ""), "null", VariableType.valueOf(s1[0]));
+        return null;
     }
 
     public enum BodyParseState {
