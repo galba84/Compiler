@@ -46,7 +46,6 @@ class ProgramLinesParserTest {
         ProgramBlocksDto programBlocksDto = new ProgramBlocksDto();
         programBlocksDto.variablesBlock.addAll(Arrays.asList("integer i;", "bool bb;", "real r;"));
         programBlocksDto.bodyBlock.addAll(Arrays.asList("i:=22+3*4-14/1;","i:=i+22;","WHILE (i<100)", "{", "i:=i-3;", "i:=i+22;", "WHILE (i<10)", "i:=i+2;",  "i:=i/2;","i:=i/4;", "i:=i+21;","}", "}", "WHILE (i<277)", "{","i:=i-5;", "i:=i+33;","}"));
-
         return programBlocksDto;
     }
 

@@ -2,10 +2,12 @@ PROGRAM
 VAR
 integer i;
 bool b;
-real r;
+string s;
+string s;
 BEGIN
 b :=true;
 i := 2;
+s:="hello";
 WHILE (i<20)
 {
 i:=i+1;
@@ -13,10 +15,15 @@ i:=i+3;
 }
 WHILE (i>100)
 {
+WHILE (i<90)
+{
+i:=i-11;
+}
 i:=i-1;
 }
-WHILE (b=true)
+WHILE (i>10)
 {
-i:=800;
+s:=s+"world";
+i:=i-1;
 }
 END

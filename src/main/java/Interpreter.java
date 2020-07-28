@@ -35,14 +35,24 @@ public class Interpreter {
         } else if (value instanceof Cycle) {
             Cycle cycle = (Cycle) value;
             while (executeCondition(cycle.getCondition())) {
-                for (BodyElement element :
-                        cycle.getPositive()) {
-                    Expression expression = (Expression) element;
-                    if (expression.expressionType.equals(ExpressionType.assignment)) {
-                        executeAssignment(expression);
-                    }
+                executeCycle(cycle);
+            }
+        }
+    }
+
+    private void executeCycle(Cycle cycle) {
+        for (BodyElement element :
+                cycle.getPositive()) {
+            if (element instanceof Cycle) {
+                Cycle cycle1 = (Cycle) element;
+                executeCycle (cycle1);
+            } else if (element instanceof Expression) {
+                Expression expression = (Expression) element;
+                if (expression.expressionType.equals(ExpressionType.assignment)) {
+                    executeAssignment(expression);
                 }
             }
+
         }
     }
 
@@ -116,14 +126,12 @@ public class Interpreter {
             } catch (Exception e) {
                 System.out.println("Error : no such var" + operation.getFirst().value);
             }
-        } else if (isStringOperation (operation)){
+        } else if (isStringOperation(operation)) {
             String first = operation.getFirst().value;
             String second = operation.getSecond().value;
             String result = executeString(first, second, operation.getOperator().value);
             executionFlow.put(currentOperationId, new Operand(result, VariableType.string));
-        }
-
-        else if (operation.getOperator().isArithmetical()) {
+        } else if (operation.getOperator().isArithmetical()) {
             if (operation.getFirst().variableType.equals(VariableType.integer)) {
                 Integer first = Integer.parseInt(operation.getFirst().value);
                 Integer second = Integer.parseInt(operation.getSecond().value);
@@ -134,14 +142,16 @@ public class Interpreter {
     }
 
     private String executeString(String first, String second, String value) {
-        switch (value){
-            case "+":{  return first+second;}
+        switch (value) {
+            case "+": {
+                return first + second;
+            }
         }
-      return null;
+        return null;
     }
 
     private boolean isStringOperation(ExpressionOperation operation) {
-        return operation.getFirst().variableType.equals(VariableType.string)&&operation.getSecond().variableType.equals(VariableType.string);
+        return operation.getFirst().variableType.equals(VariableType.string) && operation.getSecond().variableType.equals(VariableType.string);
     }
 
     private boolean magicLogic(ExpressionOperation operation) {
@@ -226,8 +236,7 @@ public class Interpreter {
         Operand second = operation.getSecond();
         if (second.value.startsWith("\"") || second.value.endsWith("\"")) {
             return;
-        } else
-            if (second.value.equals("true") || second.value.equals("false")) {
+        } else if (second.value.equals("true") || second.value.equals("false")) {
             return;
         } else if (second.value.startsWith("$")) {
             Operand operand = executionFlow.get(second.value);

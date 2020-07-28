@@ -1,21 +1,26 @@
 import Dto.ProgramBlocksDto;
 import Entities.*;
 import Enums.ExpressionType;
-import Enums.VariableType;
 import Exceptions.ExpressionException;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class ProgramEntitiesParser {
 
-    int lineNumber = 0;
+    int lineNumber;
     int id;
+    Integer cycleLevelId = 0;
+    Integer bracketsLevelId = 0;
+
     ExpressionParser expressionParser = new ExpressionParser();
     BodyParseState parseBodyState = BodyParseState.SINGLE_LINE;
     List<BodyElement> expressionBuffer;
     boolean multiLines = false;
     VariablesParser variablesParser = new VariablesParser();
+    Map<String, Cycle> tempCycleElements = new LinkedHashMap<>();
 
     int getId() {
         return ++id;
@@ -48,7 +53,7 @@ public class ProgramEntitiesParser {
             lineNumber++;
             try {
                 Variable variable = parseVariables(line);
-                if (null != variable){
+                if (null != variable) {
                     result.variablesContainer.add(variable);
                 }
             } catch (Exception e) {
@@ -59,7 +64,7 @@ public class ProgramEntitiesParser {
 
 
     public BodyElement parseBody(String line) throws ExpressionException {
-        if (null == line) {
+        if (null == line && line.isEmpty()) {
             return null;
         }
         line = line.trim();
@@ -70,37 +75,49 @@ public class ProgramEntitiesParser {
             System.out.println(e.toString());
         }
         if (parseBodyState.equals(BodyParseState.SINGLE_LINE)) {
-            if (bodyExpressionLineType.equals(BodyExpressionLineType.REGULAR)) {
-                Expression expression = expressionParser.parse(line);
-                expression.expressionType = ExpressionType.assignment;
-//                expression.validate();
-                return expression;
-            }
-            if (bodyExpressionLineType.equals(BodyExpressionLineType.CONDITION)) {
-                parseBodyState = BodyParseState.CYCLE;
-                expressionBuffer = new LinkedList<>();
-                Expression expression = expressionParser.parseCondition(line);
-                expression.expressionType = ExpressionType.condition;
-//                expression.validate();
-                expressionBuffer.add(expression);
-                return null;
-            }
+            return parseSingleBodyLine(line, bodyExpressionLineType);
         }
         if (parseBodyState.equals(BodyParseState.CYCLE)) {
             if (bodyExpressionLineType.equals(BodyExpressionLineType.OPEN_FIGURE_BRACKETS)) {
+                bracketsLevelId++;
                 multiLines = true;
                 return null;
             }
             if (bodyExpressionLineType.equals(BodyExpressionLineType.CLOSE_FIGURE_BRACKETS)) {
-                multiLines = false;
+                bracketsLevelId--;
                 Expression condition = (Expression) expressionBuffer.remove(0);
                 Cycle cycle = new Cycle(condition, expressionBuffer);
                 cycle.line = cycle.toString();
-                parseBodyState = BodyParseState.SINGLE_LINE;
-                return cycle;
+                expressionBuffer.clear();
+                if (cycleLevelId.equals(0)) {
+                    parseBodyState = BodyParseState.SINGLE_LINE;
+                    expressionBuffer.clear();
+                    return cycle;
+                }
+                if (cycleLevelId > 0) {
+                    Integer key = cycleLevelId - 1;
+                    Cycle outerCycle = tempCycleElements.get(key.toString());
+                    expressionBuffer.add(outerCycle.getCondition());
+                    expressionBuffer.addAll(outerCycle.getPositive());
+                    expressionBuffer.add(cycle);
+//                    outerCycle.getPositive().add(cycle);
+//                    outerCycle.getPositive().addAll(expressionBuffer);
+//                    expressionBuffer.clear();
+//                    multiLines = false;
+//                    if (cycleLevelId.equals(0)) {
+//                        multiLines = false;
+//                        return outerCycle;
+//                    }
+                }
+                cycleLevelId--;
+
+                if (bracketsLevelId .equals(0) ) {
+                    multiLines = false;
+                }
+//                return cycle;
             }
             if (bodyExpressionLineType.equals(BodyExpressionLineType.REGULAR)) {
-                if (multiLines) {
+                if (multiLines || bracketsLevelId>0) {
                     Expression exp = expressionParser.parse(line);
                     exp.expressionType = ExpressionType.assignment;
 //                    exp.validate();
@@ -117,7 +134,38 @@ public class ProgramEntitiesParser {
                     cycle.line = line;
                     return cycle;
                 }
+            } else if (bodyExpressionLineType.equals(BodyExpressionLineType.CONDITION)) {
+                Expression condition = (Expression) expressionBuffer.remove(0);
+                Cycle cycle = new Cycle(condition, expressionBuffer);
+                cycle.line = cycle.toString();
+                tempCycleElements.put(cycleLevelId.toString(), cycle);
+                cycleLevelId++;
+                expressionBuffer.clear();
+                Expression expression = expressionParser.parseCondition(line);
+                expression.expressionType = ExpressionType.condition;
+                expressionBuffer.add(expression);
+//                multiLines = false;
+                System.out.println(line + "inside condition # " + cycleLevelId);
             }
+        }
+        System.out.println("line parse exception : " + line);
+        return null;
+    }
+
+    private BodyElement parseSingleBodyLine(String line, BodyExpressionLineType bodyExpressionLineType) throws ExpressionException {
+        if (bodyExpressionLineType.equals(BodyExpressionLineType.REGULAR)) {
+            Expression expression = expressionParser.parse(line);
+            expression.expressionType = ExpressionType.assignment;
+//                expression.validate();
+            return expression;
+        }
+        if (bodyExpressionLineType.equals(BodyExpressionLineType.CONDITION)) {
+            parseBodyState = BodyParseState.CYCLE;
+            expressionBuffer = new LinkedList<>();
+            Expression expression = expressionParser.parseCondition(line);
+            expression.expressionType = ExpressionType.condition;
+//                expression.validate();
+            expressionBuffer.add(expression);
         }
         return null;
     }
@@ -142,7 +190,7 @@ public class ProgramEntitiesParser {
     private Variable parseVariables(String s) {
 
         try {
-          return   variablesParser.parse(s);
+            return variablesParser.parse(s);
         } catch (Exception e) {
             e.printStackTrace();
         }

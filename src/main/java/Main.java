@@ -20,7 +20,7 @@ public class Main {
     public static void main(String[] args) {
         Main main = new Main();
         try {
-            text = main.readFileAsString("src/main/resources/program");
+            text = main.readFileAsString("src/main/resources/program1");
         } catch (Exception e) {
             e.printStackTrace();
         }

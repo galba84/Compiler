@@ -1,0 +1,26 @@
+PROGRAM
+VAR
+integer i;
+bool b;
+string s;
+string s;
+BEGIN
+i := 2;
+WHILE (i<3)
+{
+WHILE (i<10)
+{
+i:=i+10;
+WHILE (i<100)
+{
+i+100;
+}
+}
+i:=i+110;
+}
+WHILE (i<1000)
+{
+i:=i+1000;
+}
+i:=i+2000;
+END
