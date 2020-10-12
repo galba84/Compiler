@@ -138,7 +138,6 @@ public class ProgramLinesParser {
     private void validateZero(String line) throws ProgramBlocksParsingException {
         if (line.trim().isEmpty()) {
             return;
-
         }
         if (!line.trim().equals("PROGRAM")) {
             throw new ProgramBlocksParsingException("Error on line " + lineCount + " : " + line);

@@ -21,7 +21,7 @@ public class Interpreter {
             executeBodyElement(entry.getValue());
         }
 
-        System.out.println("FINAL SUCESS");
+        System.out.println("FINAL SUCCESS");
         System.out.println("VAR VALUES : ");
         System.out.println(variablesContainer.toString());
     }

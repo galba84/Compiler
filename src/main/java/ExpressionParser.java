@@ -4,21 +4,19 @@ import Exceptions.ExpressionException;
 import java.util.*;
 
 public class ExpressionParser {
-    private Integer level;
     public Expression expression;
 
     public Expression parseCondition(String expressionString) throws ExpressionException {
         String replace = expressionString.replace("WHILE", "").replace("(", "").replace(")", "").trim();
         expression = new Expression();
         expression.line = expressionString;
-        level = 0;
         List<ExpressionOperationPartType> expressionPartsFromExpressionWithOpenBrackets = getExpressionPartsFromExpressionWithOpenBrackets(replace);
         expression.orderedExpressionOperations.add(new ExpressionOperation(
                 (Operand) expressionPartsFromExpressionWithOpenBrackets.get(0),
                 (Operand) expressionPartsFromExpressionWithOpenBrackets.get(2),
                 (Operator) expressionPartsFromExpressionWithOpenBrackets.get(1)));
         if (expressionPartsFromExpressionWithOpenBrackets.size() > 3) {
-            throw new ExpressionException("ERROR: condition shuold have one operator " + replace);
+            throw new ExpressionException("ERROR: condition should have one operator " + replace);
         }
         return expression;
     }
@@ -27,7 +25,6 @@ public class ExpressionParser {
         String s = expressionString.replace(";", "").replaceAll(" ","");
         expression = new Expression();
         expression.line = s;
-        level = 0;
         BracketsOpener bracketsOpener = new BracketsOpener();
         bracketsOpener.openBrackets(s);
         LinkedList<String> linkedList = new LinkedList<>();
@@ -122,60 +119,6 @@ public class ExpressionParser {
                 return true;
         }
         return false;
-    }
-
-
-
-    public void openBrackets(String expressionString) {
-        List<String> tempBuffer = new LinkedList<>();
-        List<String> expressionSymbols = new LinkedList<>(Arrays.asList(expressionString.split("")));
-//        int idI=0;
-        String buffer = "";
-        for (int i = 0; i < expressionSymbols.size(); i++) {
-            String s = expressionSymbols.get(i);
-            if (s.equals("(")) {
-                level++;
-                if (buffer.length() > 0) {
-                    tempBuffer.add(buffer);
-                    buffer = "";
-                }
-            } else if (s.equals(")")) {
-                level--;
-                if (buffer.length() > 0) {
-                    //$
-                    String id = expression.getOperationId();
-//                    idI++;
-                    putToMap(id, buffer);
-                    if (tempBuffer.size() > 0) {
-                        buffer = tempBuffer.remove(tempBuffer.size() - 1) + id;
-                    }
-                }
-            } else {
-                buffer += s;
-            }
-            if (i == expressionSymbols.size() - 1) {
-                level--;
-                String id = expression.getOperationId();
-                putToMap(id, buffer);
-//                idI++;
-            }
-        }
-    }
-
-
-
-
-
-
-    private void putToMap(String id, String buffer) {
-        if (expression.expressionPartsPrecedenceLeveledMap.containsKey(level.toString())) {
-            Map<String, String> stringStringMap = expression.expressionPartsPrecedenceLeveledMap.get(level.toString());
-            stringStringMap.put(id, buffer);
-        } else {
-            Map<String, String> stringStringMap = new HashMap<>();
-            stringStringMap.put(id, buffer);
-            expression.expressionPartsPrecedenceLeveledMap.put(level.toString(), stringStringMap);
-        }
     }
 }
 
