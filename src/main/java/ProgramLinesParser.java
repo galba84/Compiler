@@ -15,24 +15,20 @@ public class ProgramLinesParser {
         result = new ProgramBlocksDto();
         lineCount = 0;
 
-        String[] strings = text.split("\\r?\\n");
-        for (String line : strings) {
-            lineCount++;
-            String res = parseLine(line);
-            if (currentParsingPoint.equals(ParserPointer.VAR)) {
-                saveVariables(res);
-            }
-            if (currentParsingPoint.equals(ParserPointer.BEGIN)) {
-                saveBody(res);
-            }
-        }
+        List<String> lines = Arrays.asList(text.split("\\r?\\n"));
+        lines.stream().map(this::parseLine).forEach(this::saveLineParseResult);
+
         if (result.variablesBlock.size() > 0) {
-            result.variablesBlock.remove(0);
+            removeBlockName(result.variablesBlock);
         }
         if (result.bodyBlock.size() > 0) {
-            result.bodyBlock.remove(0);
+            removeBlockName(result.bodyBlock);
         }
         return result;
+    }
+
+    private void removeBlockName(List<String> variablesBlock) {
+        variablesBlock.remove(0);
     }
 
     private String parseLine(String line) {
@@ -104,19 +100,8 @@ public class ProgramLinesParser {
     }
 
     private boolean isContainsBlockKeyWords(String line) {
-        String[] words = line.replace(',', ' ').split(" ");
-
-        for (ParserPointer value : ParserPointer.values()
-        ) {
-            for (String word : words
-            ) {
-                if (value.name().equals(word)) {
-                    return true;
-                }
-            }
-
-        }
-        return false;
+        List<String> strings = Arrays.asList(line.replace(',', ' ').split(" "));
+        return strings.stream().anyMatch(ParserPointer::contains);
     }
 
     private void validateInitial(String line) throws ProgramBlocksParsingException {
@@ -151,5 +136,13 @@ public class ProgramLinesParser {
 
     private void saveVariables(String line) {
         result.variablesBlock.add(line);
+    }
+
+    private void saveLineParseResult(String result){
+        if (currentParsingPoint.equals(ParserPointer.VAR)) {
+            saveVariables(result);
+        } else if (currentParsingPoint.equals(ParserPointer.BEGIN)) {
+            saveBody(result);
+        }
     }
 }
