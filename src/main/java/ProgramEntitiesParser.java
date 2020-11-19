@@ -100,27 +100,17 @@ public class ProgramEntitiesParser {
                     expressionBuffer.add(outerCycle.getCondition());
                     expressionBuffer.addAll(outerCycle.getPositive());
                     expressionBuffer.add(cycle);
-//                    outerCycle.getPositive().add(cycle);
-//                    outerCycle.getPositive().addAll(expressionBuffer);
-//                    expressionBuffer.clear();
-//                    multiLines = false;
-//                    if (cycleLevelId.equals(0)) {
-//                        multiLines = false;
-//                        return outerCycle;
-//                    }
                 }
                 cycleLevelId--;
 
                 if (bracketsLevelId .equals(0) ) {
                     multiLines = false;
                 }
-//                return cycle;
             }
             if (bodyExpressionLineType.equals(BodyExpressionLineType.REGULAR)) {
                 if (multiLines || bracketsLevelId>0) {
                     Expression exp = expressionParser.parse(line);
                     exp.expressionType = ExpressionType.assignment;
-//                    exp.validate();
                     expressionBuffer.add(exp);
                     return null;
                 } else {
@@ -144,7 +134,6 @@ public class ProgramEntitiesParser {
                 Expression expression = expressionParser.parseCondition(line);
                 expression.expressionType = ExpressionType.condition;
                 expressionBuffer.add(expression);
-//                multiLines = false;
                 System.out.println(line + "inside condition # " + cycleLevelId);
             }
         }
@@ -156,7 +145,6 @@ public class ProgramEntitiesParser {
         if (bodyExpressionLineType.equals(BodyExpressionLineType.REGULAR)) {
             Expression expression = expressionParser.parse(line);
             expression.expressionType = ExpressionType.assignment;
-//                expression.validate();
             return expression;
         }
         if (bodyExpressionLineType.equals(BodyExpressionLineType.CONDITION)) {
@@ -164,7 +152,6 @@ public class ProgramEntitiesParser {
             expressionBuffer = new LinkedList<>();
             Expression expression = expressionParser.parseCondition(line);
             expression.expressionType = ExpressionType.condition;
-//                expression.validate();
             expressionBuffer.add(expression);
         }
         return null;
@@ -188,14 +175,11 @@ public class ProgramEntitiesParser {
     }
 
     private Variable parseVariables(String s) {
-
         try {
             return variablesParser.parse(s);
         } catch (Exception e) {
             e.printStackTrace();
         }
-//        String[] s1 = s.split(" ");
-//        return new Variable(s1[1].replace(";", ""), "null", VariableType.valueOf(s1[0]));
         return null;
     }
 

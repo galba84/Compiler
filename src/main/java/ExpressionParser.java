@@ -28,11 +28,9 @@ public class ExpressionParser {
         BracketsOpener bracketsOpener = new BracketsOpener();
         bracketsOpener.openBrackets(s);
         LinkedList<String> linkedList = new LinkedList<>();
-        int ii=0;
-        for (String ss:bracketsOpener.tempBuffer.values()
-             ) {
-            linkedList.add(bracketsOpener.tempBuffer.get("$"+ii));
-            ii++;
+
+        for (int i = 0; i < bracketsOpener.tempBuffer.size(); i++) {
+            linkedList.add(bracketsOpener.tempBuffer.get("$"+i));
         }
         for (Integer i = bracketsOpener.tempBuffer.size()-1; i>= 0 ; i--) {
             LinkedHashMap<String, String> stringStringLinkedHashMap = new LinkedHashMap<>();

@@ -1,82 +1,27 @@
+import Entities.ParserPointer;
 import Entities.Variable;
 import Enums.VariableType;
+import Validators.Validator;
+import Validators.ValidatorFactory;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class VariablesParser {
-    ValidateLine validateLine = new ValidateLine();
 
-    public Variable parse(String line) throws Exception {
-        validateLine.validate(line);
-if (line.isEmpty()){
-    return null;
-}
-        List<String> varLineItems = Arrays.asList(line.trim().split(" "));
-
-        if (varLineItems.size() == 2) {
-            if (varLineItems.get(1).length() > 1 && varLineItems.get(1).endsWith(";")) {
-                String secondParam = varLineItems.get(1).substring(0, varLineItems.get(1).length() - 1);
-                varLineItems.set(1, secondParam);
-
-            } else {
-                throw new Exception("var line is not correct");
-            }
-        }
+    public Variable parse(final String line) throws Exception {
+        Validator lineValidator = ValidatorFactory.getLineValidator(ParserPointer.VAR);
+        lineValidator.validate(line);
+        String newLine = normalizeLine(line);
+        List<String> varLineItems = Arrays.asList(newLine.trim().split(" "));
         return new Variable(varLineItems.get(1), "", VariableType.valueOf(varLineItems.get(0)));
     }
 
-
-    class ValidateLine {
-        public void validate(String line) throws Exception {
-            String trimedLine = line.trim();
-            if (trimedLine.length() == 0) {
-                return;
-            }
-            List<String> varLineItems = Arrays.asList(trimedLine.split(" "));
-
-            if (varLineItems.size() < 2) {
-                throw new Exception("line should starts with VarType followed by var name enclosed by semicolon");
-            }
-            validateVarType(varLineItems.get(0));
-
-            if (varLineItems.size() == 2) {
-                String secondParam = varLineItems.get(1);
-                String varName = secondParam.substring(0, secondParam.length() - 1);
-                if (secondParam.length() > 1) {
-                    String thirdParam = secondParam.substring(secondParam.length() - 1);
-                    validateVarName(varName);
-                    validateSemicolon(thirdParam);
-                } else {
-                    validateSemicolon(secondParam);
-                    validateVarName(secondParam);
-                }
-
-            } else if (varLineItems.size() == 3) {
-                String secondParam = varLineItems.get(1);
-                validateVarName(secondParam);
-                String thirdParam = secondParam.substring(secondParam.length() - 1);
-                validateSemicolon(thirdParam);
-            }
+    public String normalizeLine(final String line) {
+        String result = line.trim();
+        if (result.indexOf(";") == result.length() - 1) {
+            return result.substring(0, result.indexOf(";")).trim();
         }
-
-        private void validateSemicolon(String thirdParam) throws Exception {
-            if (!";".equals(thirdParam)) {
-                throw new Exception("line should be enclosed with semicolon");
-            }
-        }
-
-        private void validateVarType(String varType) throws Exception {
-            if (!VariableType.contains(varType)) {
-                throw new Exception("Line starts not with VarType, line should starts with VarType followed by var name enclosed by semicolon");
-            }
-        }
-
-        private void validateVarName(String varName) throws Exception {
-            if (!varName.matches("^[a-z_]\\w*$")) {
-                throw new Exception("variable should satisfy regex ^[a-z_]w*$");
-            }
-        }
+        return result;
     }
-
 }
